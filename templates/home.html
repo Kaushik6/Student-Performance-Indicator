@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Exam Performance Predictor</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200
+             flex items-center justify-center px-4">
+
+    <!-- Main Glass Card -->
+    <div class="w-full max-w-4xl backdrop-blur-xl bg-white/80 shadow-2xl rounded-3xl p-10">
+
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-indigo-700">
+                Student Exam Performance Indicator
+            </h1>
+            <p class="text-gray-600 mt-2 text-lg">
+                AI-based Mathematics Score Prediction
+            </p>
+        </div>
+
+        <!-- FORM -->
+        <form action="{{ url_for('predict_datapoint') }}" method="post" class="space-y-6">
+
+            <!-- Gender -->
+            <div>
+                <label class="font-semibold">Gender</label>
+                <select name="gender" required
+                    class="w-full mt-1 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400">
+                    <option disabled>Select Gender</option>
+                    <option value="male"
+                        {% if request.form.get('gender') == 'male' %}selected{% endif %}>
+                        Male
+                    </option>
+                    <option value="female"
+                        {% if request.form.get('gender') == 'female' %}selected{% endif %}>
+                        Female
+                    </option>
+                </select>
+            </div>
+
+            <!-- Ethnicity -->
+            <div>
+                <label class="font-semibold">Race / Ethnicity</label>
+                <select name="ethnicity" required
+                    class="w-full mt-1 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400">
+                    <option disabled>Select Ethnicity</option>
+                    {% for g in ['group A','group B','group C','group D','group E'] %}
+                    <option value="{{ g }}"
+                        {% if request.form.get('ethnicity') == g %}selected{% endif %}>
+                        {{ g }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Parent Education -->
+            <div>
+                <label class="font-semibold">Parental Level of Education</label>
+                <select name="parental_level_of_education" required
+                    class="w-full mt-1 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400">
+                    {% for edu in [
+                        "associate's degree","bachelor's degree","high school",
+                        "master's degree","some college","some high school"] %}
+                    <option value="{{ edu }}"
+                        {% if request.form.get('parental_level_of_education') == edu %}selected{% endif %}>
+                        {{ edu }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Two Column -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div>
+                    <label class="font-semibold">Lunch Type</label>
+                    <select name="lunch" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400">
+                        <option value="free/reduced"
+                            {% if request.form.get('lunch') == 'free/reduced' %}selected{% endif %}>
+                            Free / Reduced
+                        </option>
+                        <option value="standard"
+                            {% if request.form.get('lunch') == 'standard' %}selected{% endif %}>
+                            Standard
+                        </option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="font-semibold">Test Preparation Course</label>
+                    <select name="test_preparation_course" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400">
+                        <option value="none"
+                            {% if request.form.get('test_preparation_course') == 'none' %}selected{% endif %}>
+                            None
+                        </option>
+                        <option value="completed"
+                            {% if request.form.get('test_preparation_course') == 'completed' %}selected{% endif %}>
+                            Completed
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Scores -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="font-semibold">Writing Score</label>
+                    <input type="number" min="0" max="100" name="reading_score" required
+                        value="{{ request.form.get('reading_score', '') }}"
+                        class="w-full mt-1 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400">
+                </div>
+
+                <div>
+                    <label class="font-semibold">Reading Score</label>
+                    <input type="number" min="0" max="100" name="writing_score" required
+                        value="{{ request.form.get('writing_score', '') }}"
+                        class="w-full mt-1 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400">
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit"
+                class="w-full mt-8 bg-gradient-to-r from-indigo-600 to-purple-600
+                       text-white text-lg font-semibold py-4 rounded-2xl
+                       shadow-xl hover:scale-[1.02] transition">
+                🔮 Predict Maths Score
+            </button>
+        </form>
+
+        <!-- RESULT -->
+        {% if results %}
+        <div class="mt-12 flex justify-center animate-pulse">
+            <div class="bg-gradient-to-br from-green-100 to-green-200
+                        rounded-3xl shadow-xl p-8 w-full max-w-md text-center">
+
+                <h2 class="text-lg font-semibold text-green-700">
+                    Predicted Mathematics Score
+                </h2>
+
+                <div class="mt-4 text-6xl font-extrabold text-green-800">
+                    {{ results }}
+                </div>
+
+                <p class="mt-3 text-gray-700">
+                    Based on academic and demographic factors
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>
+
